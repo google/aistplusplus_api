@@ -1,7 +1,7 @@
 import setuptools
 
 INSTALL_REQUIREMENTS = [
-    'numpy', 'opencv-python']
+    'absl-py', 'numpy', 'opencv-python']
 
 setuptools.setup(
     name='aist_plusplus_api',

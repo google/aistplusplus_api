@@ -19,7 +19,7 @@ flags.DEFINE_string(
 )
 flags.DEFINE_string(
     'save_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus/keypoints_raw/',
+    '/usr/local/google/home/ruilongli/data/public/aist_plusplus/keypoints2d/',
     'output local dictionary that stores 2D keypoints detection results in pkl.'
 )
 
