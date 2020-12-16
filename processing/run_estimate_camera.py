@@ -14,8 +14,11 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'anno_dir',
     '/usr/local/google/home/ruilongli/data/public/aist_plusplus/',
-    'local dictionary for AIST++ annotations.')
-
+    'input local dictionary for AIST++ annotations.')
+flags.DEFINE_string(
+    'save_dir',
+    '/usr/local/google/home/ruilongli/data/public/aist_plusplus/cameras/',
+    'output local dictionary that stores AIST++ camera parameters.')
 random.seed(42)
 
 
@@ -52,7 +55,7 @@ def main(_):
     # Init camera parameters
     cgroup = init_env_cameras()
 
-    # Optimize camera parameters using a set of sequences.
+    # Select a set of sequences for optimizing camera parameters.
     seq_names = random.choices(seq_names, k=20)
 
     # Load 2D keypoints
@@ -82,8 +85,8 @@ def main(_):
         n_samp_iter=500,
         n_samp_full=5000,
         verbose=True)
-    os.makedirs(aist_dataset.camera_dir, exist_ok=True)
-    camera_file = os.path.join(aist_dataset.camera_dir, f'{env_name}.json')
+    os.makedirs(FLAGS.save_dir, exist_ok=True)
+    camera_file = os.path.join(FLAGS.save_dir, f'{env_name}.json')
     with open(camera_file, 'w') as f:
       json.dump([camera.get_dict() for camera in cgroup.cameras], f)
 
