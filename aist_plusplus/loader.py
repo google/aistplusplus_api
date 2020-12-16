@@ -18,8 +18,8 @@ class AISTDataset:
     # Init paths
     self.camera_dir = os.path.join(anno_dir, 'cameras/')
     self.motion_dir = os.path.join(anno_dir, 'motions/')
-    self.keypoint_dir = os.path.join(anno_dir, 'keypoints3d/')
-    self.keypoint_dir = os.path.join(anno_dir, 'keypoints2d/')
+    self.keypoint3d_dir = os.path.join(anno_dir, 'keypoints3d/')
+    self.keypoint2d_dir = os.path.join(anno_dir, 'keypoints2d/')
     self.filter_file = os.path.join(anno_dir, 'ignore_list.txt')
 
     # Load environment setting mapping

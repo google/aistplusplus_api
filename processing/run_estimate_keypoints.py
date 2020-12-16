@@ -30,7 +30,7 @@ def main(_):
 
     # load 2D keypoints
     keypoints2d, det_scores, _ = AISTDataset.load_keypoint2d(
-        aist_dataset.keypoint_dir, seq_name=seq_name)
+        aist_dataset.keypoint2d_dir, seq_name=seq_name)
     nviews, nframes, _, _ = keypoints2d.shape
     assert det_scores.shape[0] == nviews
     assert det_scores.shape[1] == nframes
