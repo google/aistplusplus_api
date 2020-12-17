@@ -43,10 +43,12 @@ class AISTDataset:
     """Get AIST video name from sequence name."""
     tags = video_name.split('_')
     if len(tags) == 3:
+      view = tags[1]
       tags[1] = 'cAll'
     else:
+      view = tags[2]
       tags[2] = 'cAll'
-    return '_'.join(tags)
+    return '_'.join(tags), view
 
   @classmethod
   def load_camera_group(cls, camera_dir, env_name):
