@@ -6,9 +6,10 @@ import random
 
 from absl import app
 from absl import flags
-from aist_plusplus.loader import AISTDataset
-import aniposelib
 import numpy as np
+import aniposelib
+
+from aist_plusplus.loader import AISTDataset
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string(

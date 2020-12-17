@@ -3,8 +3,8 @@ import json
 import os
 import pickle
 
-import aniposelib
 import numpy as np
+import aniposelib
 
 
 class AISTDataset:

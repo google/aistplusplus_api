@@ -5,10 +5,11 @@ import pickle
 from absl import app
 from absl import flags
 from absl import logging
-from aist_plusplus.loader import AISTDataset
 import numpy as np
 import torch
 from smplx import SMPL
+
+from aist_plusplus.loader import AISTDataset
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
