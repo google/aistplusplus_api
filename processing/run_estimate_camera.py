@@ -33,7 +33,8 @@ flags.DEFINE_string(
     'save_dir',
     '/usr/local/google/home/ruilongli/data/public/aist_plusplus/cameras/',
     'output local dictionary that stores AIST++ camera parameters.')
-random.seed(42)
+random.seed(0)
+np.random.seed(0)
 
 
 def init_env_cameras():
@@ -76,7 +77,7 @@ def main(_):
     keypoints2d_all = []
     for seq_name in seq_names:
       keypoints2d_raw, _, _ = AISTDataset.load_keypoint2d(
-          aist_dataset.keypoint_dir, seq_name=seq_name)
+          aist_dataset.keypoint2d_dir, seq_name=seq_name)
       # Special cases
       if seq_name == 'gBR_sBM_cAll_d04_mBR0_ch01':
         keypoints2d_raw[4] = np.nan  # not synced view

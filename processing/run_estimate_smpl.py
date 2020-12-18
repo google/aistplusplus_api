@@ -37,6 +37,8 @@ flags.DEFINE_string(
     'save_dir',
     '/usr/local/google/home/ruilongli/data/public/aist_plusplus/motions/',
     'output local dictionary that stores AIST++ SMPL-format motion data.')
+np.random.seed(0)
+torch.manual_seed(0)
 
 
 def unify_joint_mappings(dataset='openpose25'):

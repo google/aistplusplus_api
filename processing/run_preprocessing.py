@@ -36,6 +36,7 @@ flags.DEFINE_string(
     '/usr/local/google/home/ruilongli/data/public/aist_plusplus/keypoints2d/',
     'output local dictionary that stores 2D keypoints detection results in pkl.'
 )
+np.random.seed(0)
 
 
 def array_nan(shape, dtype=np.float32):

@@ -31,6 +31,7 @@ flags.DEFINE_string(
     'save_dir',
     '/usr/local/google/home/ruilongli/data/public/aist_plusplus/keypoints3d/',
     'output local dictionary that stores AIST++ 3D keypoints.')
+np.random.seed(0)
 
 
 def main(_):
