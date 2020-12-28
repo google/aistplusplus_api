@@ -27,7 +27,7 @@ import torch
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'anno_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus/',
+    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/',
     'input local dictionary for AIST++ annotations.')
 flags.DEFINE_string(
     'smpl_dir',
@@ -35,8 +35,16 @@ flags.DEFINE_string(
     'input local dictionary that stores SMPL data.')
 flags.DEFINE_string(
     'save_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus/motions/',
+    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/motions/',
     'output local dictionary that stores AIST++ SMPL-format motion data.')
+flags.DEFINE_list(
+    'sequence_names',
+    None,
+    'list of sequence names to be processed. None means to process all.')
+flags.DEFINE_string(
+    'save_dir_gcs',
+    None,
+    'output GCS directory.')
 np.random.seed(0)
 torch.manual_seed(0)
 
@@ -181,7 +189,12 @@ def main(_):
   aist_dataset = AISTDataset(FLAGS.anno_dir)
   smpl_regressor = SMPLRegressor(FLAGS.smpl_dir, 'MALE')
 
-  for seq_name, _ in aist_dataset.mapping_seq2env.items():
+  if FLAGS.sequence_names:
+    seq_names = FLAGS.sequence_names
+  else:
+    seq_names = aist_dataset.mapping_seq2env.keys()
+
+  for seq_name in seq_names:
     logging.info('processing %s', seq_name)
 
     # load 3D keypoints
@@ -210,6 +223,12 @@ def main(_):
           'smpl_loss': loss,
       }, f, protocol=pickle.HIGHEST_PROTOCOL)
 
+  # upload results to GCS
+  if FLAGS.save_dir_gcs:
+    import gcs_utils
+    gcs_utils.upload_files_to_gcs(
+        local_folder=FLAGS.save_dir,
+        gcs_path=FLAGS.save_dir_gcs)
 
 if __name__ == '__main__':
   app.run(main)

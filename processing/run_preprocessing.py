@@ -28,12 +28,12 @@ import numpy as np
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'keypoints_dir',
-    '/usr/local/google/home/ruilongli/data/AIST_plusplus_v3/posenet_2stage_pose_10M_all/',
+    '/usr/local/google/home/ruilongli/data/AIST_plusplus_v4/posenet_2stage_pose_10M_60fps_all/',
     'input local dictionary that stores 2D keypoints detection results in json.'
 )
 flags.DEFINE_string(
     'save_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus/keypoints2d/',
+    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/keypoints2d/',
     'output local dictionary that stores 2D keypoints detection results in pkl.'
 )
 np.random.seed(0)
@@ -128,6 +128,7 @@ def load_keypoints2d(data_dir, seq_name, njoints=17):
 def process_and_save(seq_name):
   keypoints2d, det_scores, timestamps = load_keypoints2d(
       FLAGS.keypoints_dir, seq_name=seq_name, njoints=17)
+  os.makedirs(FLAGS.save_dir, exist_ok=True)
   save_path = os.path.join(FLAGS.save_dir, f'{seq_name}.pkl')
   with open(save_path, 'wb') as f:
     pickle.dump({
@@ -143,8 +144,8 @@ def main(_):
       video_name for video_name in video_names
       if len(video_name.split('_')) == 6
   ]
-  seq_names = list(
-      set([AISTDataset.get_seq_name(video_name) for video_name in video_names]))
+  seq_names = list(set([
+      AISTDataset.get_seq_name(video_name)[0] for video_name in video_names]))
 
   pool = multiprocessing.Pool(16)
   pool.map(process_and_save, seq_names)

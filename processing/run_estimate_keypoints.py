@@ -25,11 +25,11 @@ import numpy as np
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'anno_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus/',
+    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/',
     'input local dictionary for AIST++ annotations.')
 flags.DEFINE_string(
     'save_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus/keypoints3d/',
+    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/keypoints3d/',
     'output local dictionary that stores AIST++ 3D keypoints.')
 np.random.seed(0)
 

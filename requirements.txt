@@ -1,0 +1,7 @@
+absl-py==0.9.0
+numpy
+torch==1.4.0
+opencv-python
+git+https://github.com/liruilong940607/aniposelib
+git+https://github.com/liruilong940607/smplx
+ffmpeg-python
