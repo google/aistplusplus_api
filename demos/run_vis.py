@@ -25,7 +25,7 @@ import torch
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'anno_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus/',
+    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/',
     'input local dictionary for AIST++ annotations.')
 flags.DEFINE_string(
     'video_dir',
@@ -41,7 +41,7 @@ flags.DEFINE_string(
     'input sequence name to be visualized.')
 flags.DEFINE_string(
     'save_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus/tmp/',
+    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/tmp/',
     'output local dictionary that stores AIST++ visualization.')
 flags.DEFINE_enum(
     'mode', '2D', ['2D', '3D', 'SMPL'],
