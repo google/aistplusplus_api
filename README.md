@@ -1,7 +1,7 @@
 # AIST++ API
  
-This repo contains starter code for using AIST++ dataset. To download the
-dataset or explore the details of this dataset, please go to our [website]().
+This repo contains starter code for using the AIST++ dataset. To download the
+dataset or explore details of this dataset, please go to our dataset [website]().
 
 ## Installation
 The code have been tested on `python>=3.7`. You can install the dependencies and
@@ -12,8 +12,10 @@ python setup.py install
 ```
 
 ## How to use
-We provide demo code for loading and visualizing AIST++ annotations. Before running the code, 
-you should have downloaded the data including [AIST++ annotations](), [AIST Dance Videos]() and [SMPL model]() (for SMPL visualization only).
+We provide demo code for loading and visualizing AIST++ annotations. 
+Note [AIST++ annotations and
+videos](https://cnsviewer.corp.google.com/cns/is-d/home/ruilongli/aistplusplus_web/download.html),
+as well as [SMPL model](https://smpl.is.tue.mpg.de/en) (for SMPL visualization only) are required to run the demo code.
 
 The directory structure of the data is expected to be:
 ```
@@ -87,7 +89,8 @@ camera parameters as well as the 3D keypoints. Finally we sequentially fit the S
 The annotations in AIST++ are in COCO-format (17) for 2D \& 3D keypoints, and
 SMPL-format for human motion annotations. It is designed to serve for general
 research purposes. However, in some cases you might need those data in different format
-(e.g., [Openpose]() / [Alphapose]() keypoints format, or [SMPLX]() human motion
+(e.g., [Openpose](https://github.com/CMU-Perceptual-Computing-Lab/openpose) / 
+[Alphapose](https://github.com/MVIG-SJTU/AlphaPose) keypoints format, or [STAR](https://star.is.tue.mpg.de/) human motion
 format). **With the code we provide, it should be easy to construct your own
 version of AIST++, with your own keypoint detector or human model defination.**
 
@@ -118,9 +121,9 @@ python processing/run_estimate_keypoints.py \
   --save_dir <ANNOTATIONS_DIR>/keypoints3d/
 ```
 
-**Step 4.** Finally we can estimate SMPL-format human motion data by sequencially fitting
+**Step 4.** Finally we can estimate SMPL-format human motion data by fitting
 the 3D keypoints to SMPL model. If you would like to use other human model such
-as [SMPLX]() and so on, you will need to do some modifications in the script
+as [STAR](https://star.is.tue.mpg.de/) and so on, you will need to do some modifications in the script
 `run_estimate_smpl.py`. You can run the following commands run the SMPL fitting.
 ``` bash
 python processing/run_estimate_smpl.py \
