@@ -88,8 +88,8 @@ The annotations in AIST++ are in COCO-format (17) for 2D \& 3D keypoints, and
 SMPL-format for human motion annotations. It is designed to serve for general
 research purposes. However, in some cases you might need those data in different format
 (e.g., [Openpose]() / [Alphapose]() keypoints format, or [SMPLX]() human motion
-format). With the code we provide, it should be easy to construct your own
-version of AIST++, with your own keypoint detector or human model defination.
+format). **With the code we provide, it should be easy to construct your own
+version of AIST++, with your own keypoint detector or human model defination.**
 
 **Step 1.** Assume you have your own 2D keypoint detection results stored in `<KEYPOINTS_DIR>`, you can run the constructing pipeline start with preprocessing the keypoints into the `.pkl` format that we support. The code we used at this
 step is as follows but you might need to modify the script `run_preprocessing.py` in order to be compatible with your own data.
