@@ -32,20 +32,46 @@ The directory structure of the data is expected to be:
 └── SMPL_NEUTRAL.pkl
 ```
 
-as well as the
-For loading and visualizing AIST++ 2D & 3D keypoints and SMPL joints. For example, to visualize a specific motion sequence, you can run:
-```
+#### Visualize 2D keypoints annotation.
+The command below will plot 2D keypoints on to the raw video and save it to the
+dictionary `./visualization/`.
+``` bash
 python demos/run_vis.py \
-  --anno_dir <AIST++_DATA_DIR> \
-  --video_dir <AIST_VIDEO_DIR> \
-  --smpl_dir <SMPL_DATA_DIR> \
+  --anno_dir <ANNOTATIONS_DIR> \
+  --video_dir <VIDEO_DIR> \
   --save_dir ./visualization/ \
   --video_name gWA_sFM_c01_d27_mWA2_ch21 \
-  --mode 2D
+  --mode **2D**
 ```
-Note you can use `--mode` option to visualize either detected COCO-format 2D keypoints (`--mode=2D`), 3D re-projected COCO-format keypoints (`--mode=3D`) or SMPL-format joints (`--mode=SMPL`).
 
+#### Visualize 3D keypoints annotation.
+The command below will project 3D keypoints onto the raw video using camera parameters, and save it to the
+dictionary `./visualization/`.
+``` bash
+python demos/run_vis.py \
+  --anno_dir <ANNOTATIONS_DIR> \
+  --video_dir <VIDEO_DIR> \
+  --save_dir ./visualization/ \
+  --video_name gWA_sFM_c01_d27_mWA2_ch21 \
+  --mode **3D**
+```
 
+### Visualize the SMPL joints annotation.
+The command below will first calculate the 3D SMPL joint locations from our motion
+annotations (joint rotations and root trajactories), then project them onto the
+raw video and plot. The result will be saved into the dictionary
+`./visualization/`.
+``` bash
+python demos/run_vis.py \
+  --anno_dir <ANNOTATIONS_DIR> \
+  --video_dir <VIDEO_DIR> \ 
+  --smpl_dir <SMPL_DIR> \
+  --save_dir ./visualization/ \ 
+  --video_name gWA_sFM_c01_d27_mWA2_ch21 \ 
+  --mode **SMPL**
+```
+
+#### Multi-view 3D keypoints and motion reconstruction.
 This repo also provides code we used for constructing this dataset from
 multi-view [AIST Dance Video Database](https://aistdancedb.ongaaccel.jp/). The
 construction pipeline starts from frame-by-frame 2D keypoints detection and
