@@ -26,7 +26,7 @@ The directory structure of the data is expected to be:
 └── ignore_list.txt
 
 <VIDEO_DIR>
-└── \*.mp4
+└── *.mp4
 
 <SMPL_DIR>
 └── SMPL_NEUTRAL.pkl
@@ -56,7 +56,7 @@ python demos/run_vis.py \
   --mode 3D
 ```
 
-### Visualize the SMPL joints annotation
+#### Visualize the SMPL joints annotation
 The command below will first calculate the SMPL joint locations from our motion
 annotations (joint rotations and root trajactories), then project them onto the
 raw video and plot. The result will be saved into the dictionary
@@ -91,35 +91,34 @@ research purposes. However, in some cases you might need those data in different
 format). With the code we provide, it should be easy to construct your own
 version of AIST++, with your own keypoint detector or human model defination.
 
-Assume you have your own 2D keypoint detection results stored in `<KEYPOINTS_DIR>`, you can run the constructing pipeline start with preprocessing
-the keypoints into the `.pkl` format that we support. The code we used at this
-step is as follows but you might need to modify the script `run_preprocessing.py` in order to compatible with your own data.
+**Step 1.** Assume you have your own 2D keypoint detection results stored in `<KEYPOINTS_DIR>`, you can run the constructing pipeline start with preprocessing the keypoints into the `.pkl` format that we support. The code we used at this
+step is as follows but you might need to modify the script `run_preprocessing.py` in order to be compatible with your own data.
 ``` bash
 python processing/run_preprocessing.py \
   --keypoints_dir <KEYPOINTS_DIR> \
   --save_dir <ANNOTATIONS_DIR>/keypoints2d/
 ```
 
-Then you can estimate the camera parameters using your 2D keypoints. This step
+**Step 2.** Then you can estimate the camera parameters using your 2D keypoints. This step
 is optional as you can still use our camera parameters annotation which are
 quite accurate. At this step, you will need the `<ANNOTATIONS_DIR>/cameras/mapping.txt` file which stores the mapping from videos to different environment settings.
 ``` bash
 # If you would like to estimate your own camera parameters:
 python processing/run_estimate_camera.py \
   --anno_dir <ANNOTATIONS_DIR> \
-  --save_dir <ANNOTATIONS_DIR>/cameras/ \
+  --save_dir <ANNOTATIONS_DIR>/cameras/
 # Or you can skip this step by just using our camera parameters annotation.
 ```
 
-Next step is to perform 3D keypoints reconstruction from multi-view 2D keypoints
+**Step 3.** Next step is to perform 3D keypoints reconstruction from multi-view 2D keypoints
 and camera parameters. You can just run:
 ``` bash
 python processing/run_estimate_keypoints.py \
   --anno_dir <ANNOTATIONS_DIR> \
-  --save_dir <ANNOTATIONS_DIR>/keypoints3d/ \
+  --save_dir <ANNOTATIONS_DIR>/keypoints3d/
 ```
 
-Finally we can estimate SMPL-format human motion data by sequencially fitting
+**Step 4.** Finally we can estimate SMPL-format human motion data by sequencially fitting
 the 3D keypoints to SMPL model. If you would like to use other human model such
 as [SMPLX]() and so on, you will need to do some modifications in the script
 `run_estimate_smpl.py`. You can run the following commands run the SMPL fitting.
@@ -127,7 +126,7 @@ as [SMPLX]() and so on, you will need to do some modifications in the script
 python processing/run_estimate_smpl.py \
   --anno_dir <ANNOTATIONS_DIR> \
   --smpl_dir <SMPL_DIR> \
-  --save_dir <ANNOTATIONS_DIR>/motions \
+  --save_dir <ANNOTATIONS_DIR>/motions/
 ```
 Note that this step will take several days to process the entire dataset if your machine have only one GPU on it.
 In practise, we run this step on a cluster so we here only provide the single-thread version code.
