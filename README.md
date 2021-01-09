@@ -4,7 +4,7 @@ This repo contains starter code for using the AIST++ dataset. To download the
 dataset or explore details of this dataset, please go to our dataset [website]().
 
 ## Installation
-The code have been tested on `python>=3.7`. You can install the dependencies and
+The code has been tested on `python>=3.7`. You can install the dependencies and
 this repo by:
 ``` bash
 pip install -r requirements.txt
@@ -15,7 +15,7 @@ python setup.py install
 We provide demo code for loading and visualizing AIST++ annotations. 
 Note [AIST++ annotations and
 videos](https://cnsviewer.corp.google.com/cns/is-d/home/ruilongli/aistplusplus_web/download.html),
-as well as [SMPL model](https://smpl.is.tue.mpg.de/en) (for SMPL visualization only) are required to run the demo code.
+as well as the [SMPL model](https://smpl.is.tue.mpg.de/en) (for SMPL visualization only) are required to run the demo code.
 
 The directory structure of the data is expected to be:
 ```
@@ -36,7 +36,7 @@ The directory structure of the data is expected to be:
 
 #### Visualize 2D keypoints annotation
 The command below will plot 2D keypoints onto the raw video and save it to the
-dictionary `./visualization/`.
+directory `./visualization/`.
 ``` bash
 python demos/run_vis.py \
   --anno_dir <ANNOTATIONS_DIR> \
@@ -48,7 +48,7 @@ python demos/run_vis.py \
 
 #### Visualize 3D keypoints annotation
 The command below will project 3D keypoints onto the raw video using camera parameters, and save it to the
-dictionary `./visualization/`.
+directory `./visualization/`.
 ``` bash
 python demos/run_vis.py \
   --anno_dir <ANNOTATIONS_DIR> \
@@ -61,7 +61,7 @@ python demos/run_vis.py \
 #### Visualize the SMPL joints annotation
 The command below will first calculate the SMPL joint locations from our motion
 annotations (joint rotations and root trajactories), then project them onto the
-raw video and plot. The result will be saved into the dictionary
+raw video and plot. The result will be saved into the directory
 `./visualization/`.
 ``` bash
 python demos/run_vis.py \
@@ -75,27 +75,26 @@ python demos/run_vis.py \
 
 #### Multi-view 3D keypoints and motion reconstruction
 
-This repo also provides code we used for constructing this dataset from
+This repo also provides code we used for constructing this dataset from the
 multi-view [AIST Dance Video Database](https://aistdancedb.ongaaccel.jp/). The
-construction pipeline starts from frame-by-frame 2D keypoints detection and
+construction pipeline starts with frame-by-frame 2D keypoint detection and
 manual camera estimation. Then triangulation and bundle adjustment are applied to optimize the
-camera parameters as well as the 3D keypoints. Finally we sequentially fit the SMPL model to 3D keypoints to get a motion sequence represented using joint angles and root trajactory. The following figure shows our pipeline overview.
+camera parameters as well as the 3D keypoints. Finally we sequentially fit the SMPL model to 3D keypoints to get a motion sequence represented using joint angles and a root trajectory. The following figure shows our pipeline overview.
 
 <div align="center">
 <img src="assets/aist_pipeline.jpg" width="1000px"/>
 <p> AIST++ construction pipeline overview.</p>
 </div>
 
-The annotations in AIST++ are in COCO-format (17) for 2D \& 3D keypoints, and
-SMPL-format for human motion annotations. It is designed to serve for general
-research purposes. However, in some cases you might need those data in different format
+The annotations in AIST++ are in [COCO-format](https://cocodataset.org/#home) for 2D \& 3D keypoints, and
+[SMPL-format](https://smpl.is.tue.mpg.de/) for human motion annotations. It is designed to serve general
+research purposes. However, in some cases you might need the data in different format
 (e.g., [Openpose](https://github.com/CMU-Perceptual-Computing-Lab/openpose) / 
 [Alphapose](https://github.com/MVIG-SJTU/AlphaPose) keypoints format, or [STAR](https://star.is.tue.mpg.de/) human motion
 format). **With the code we provide, it should be easy to construct your own
 version of AIST++, with your own keypoint detector or human model defination.**
 
-**Step 1.** Assume you have your own 2D keypoint detection results stored in `<KEYPOINTS_DIR>`, you can run the constructing pipeline start with preprocessing the keypoints into the `.pkl` format that we support. The code we used at this
-step is as follows but you might need to modify the script `run_preprocessing.py` in order to be compatible with your own data.
+**Step 1.** Assume you have your own 2D keypoint detection results stored in `<KEYPOINTS_DIR>`, you can start by preprocessing the keypoints into the `.pkl` format that we support. The code we used at this step is as follows but you might need to modify the script `run_preprocessing.py` in order to be compatible with your own data.
 ``` bash
 python processing/run_preprocessing.py \
   --keypoints_dir <KEYPOINTS_DIR> \
@@ -103,14 +102,14 @@ python processing/run_preprocessing.py \
 ```
 
 **Step 2.** Then you can estimate the camera parameters using your 2D keypoints. This step
-is optional as you can still use our camera parameters annotation which are
+is optional as you can still use our camera parameter estimates which are
 quite accurate. At this step, you will need the `<ANNOTATIONS_DIR>/cameras/mapping.txt` file which stores the mapping from videos to different environment settings.
 ``` bash
 # If you would like to estimate your own camera parameters:
 python processing/run_estimate_camera.py \
   --anno_dir <ANNOTATIONS_DIR> \
   --save_dir <ANNOTATIONS_DIR>/cameras/
-# Or you can skip this step by just using our camera parameters annotation.
+# Or you can skip this step by just using our camera parameter estimates.
 ```
 
 **Step 3.** Next step is to perform 3D keypoints reconstruction from multi-view 2D keypoints
@@ -122,16 +121,37 @@ python processing/run_estimate_keypoints.py \
 ```
 
 **Step 4.** Finally we can estimate SMPL-format human motion data by fitting
-the 3D keypoints to SMPL model. If you would like to use other human model such
-as [STAR](https://star.is.tue.mpg.de/) and so on, you will need to do some modifications in the script
-`run_estimate_smpl.py`. You can run the following commands run the SMPL fitting.
+the 3D keypoints to the SMPL model. If you would like to use another human model such
+as [STAR](https://star.is.tue.mpg.de/), you will need to do some modifications in the script
+`run_estimate_smpl.py`. The following command runs SMPL fitting.
 ``` bash
 python processing/run_estimate_smpl.py \
   --anno_dir <ANNOTATIONS_DIR> \
   --smpl_dir <SMPL_DIR> \
   --save_dir <ANNOTATIONS_DIR>/motions/
 ```
-Note that this step will take several days to process the entire dataset if your machine have only one GPU on it.
-In practise, we run this step on a cluster so we here only provide the single-thread version code.
+Note that this step will take several days to process the entire dataset if your machine has only one GPU.
+In practise, we run this step on a cluster, but are only able to provide the single-threaded version.
 
+#### MISC.
+- COCO-format keypoint defination:
+```
+[
+"nose", 
+"left_eye", "right_eye", "left_ear", "right_ear", "left_shoulder","right_shoulder", 
+"left_elbow", "right_elbow", "left_wrist", "right_wrist", "left_hip", "right_hip", 
+"left_knee", "right_knee", "left_ankle", "right_ankle"
+]
+```
 
+- SMPL-format body joint defination:
+```
+[
+"root", 
+"left_hip", "left_knee", "left_foot", "left_toe", 
+"right_hip", "right_knee", "right_foot", "right_toe",
+"waist", "spine", "chest", "neck", "head", 
+"left_in_shoulder", "left_shoulder", "left_elbow", "left_wrist",
+"right_in_shoulder", "right_shoulder", "right_elbow", "right_wrist"
+]
+```

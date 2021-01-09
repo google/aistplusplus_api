@@ -49,12 +49,12 @@ class AISTDataset:
 
   @classmethod
   def get_video_name(cls, seq_name, view):
-    """Get AIST video name from sequence name."""
+    """Get AIST video name from AIST++ sequence name."""
     return seq_name.replace('cAll', view)
 
   @classmethod
   def get_seq_name(cls, video_name):
-    """Get AIST video name from sequence name."""
+    """Get AIST++ sequence name from AIST video name."""
     tags = video_name.split('_')
     if len(tags) == 3:
       view = tags[1]
