@@ -60,7 +60,7 @@ python demos/run_vis.py \
 
 #### Visualize the SMPL joints annotation
 The command below will first calculate the SMPL joint locations from our motion
-annotations (joint rotations and root trajactories), then project them onto the
+annotations (joint rotations and root trajectories), then project them onto the
 raw video and plot. The result will be saved into the directory
 `./visualization/`.
 ``` bash
@@ -92,7 +92,7 @@ research purposes. However, in some cases you might need the data in different f
 (e.g., [Openpose](https://github.com/CMU-Perceptual-Computing-Lab/openpose) / 
 [Alphapose](https://github.com/MVIG-SJTU/AlphaPose) keypoints format, or [STAR](https://star.is.tue.mpg.de/) human motion
 format). **With the code we provide, it should be easy to construct your own
-version of AIST++, with your own keypoint detector or human model defination.**
+version of AIST++, with your own keypoint detector or human model definition.**
 
 **Step 1.** Assume you have your own 2D keypoint detection results stored in `<KEYPOINTS_DIR>`, you can start by preprocessing the keypoints into the `.pkl` format that we support. The code we used at this step is as follows but you might need to modify the script `run_preprocessing.py` in order to be compatible with your own data.
 ``` bash
@@ -134,7 +134,7 @@ Note that this step will take several days to process the entire dataset if your
 In practise, we run this step on a cluster, but are only able to provide the single-threaded version.
 
 #### MISC.
-- COCO-format keypoint defination:
+- COCO-format keypoint definition:
 ```
 [
 "nose", 
@@ -144,7 +144,7 @@ In practise, we run this step on a cluster, but are only able to provide the sin
 ]
 ```
 
-- SMPL-format body joint defination:
+- SMPL-format body joint definition:
 ```
 [
 "root", 
