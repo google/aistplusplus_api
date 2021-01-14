@@ -1,7 +1,7 @@
 # AIST++ API
  
 This repo contains starter code for using the AIST++ dataset. To download the
-dataset or explore details of this dataset, please go to our dataset [website](https://github.com/google/aistplusplus_dataset/index.html).
+dataset or explore details of this dataset, please go to our dataset [website](https://google.github.io/aistplusplus_dataset).
 
 ## Installation
 The code has been tested on `python>=3.7`. You can install the dependencies and
@@ -14,7 +14,7 @@ python setup.py install
 ## How to use
 We provide demo code for loading and visualizing AIST++ annotations. 
 Note [AIST++ annotations and
-videos](https://github.com/google/aistplusplus_dataset/download.html),
+videos](https://google.github.io/aistplusplus_dataset/download.html),
 as well as the [SMPL model](https://smpl.is.tue.mpg.de/en) (for SMPL visualization only) are required to run the demo code.
 
 The directory structure of the data is expected to be:
