@@ -33,7 +33,12 @@ def ffmpeg_video_read(video_path, fps=None):
     A `np.array` with the shape of [seq_len, height, width, 3]
   """
   assert os.path.exists(video_path), f'{video_path} does not exist!'
-  probe = ffmpeg.probe(video_path)
+  try:
+    probe = ffmpeg.probe(video_path)
+  except ffmpeg.Error as e:
+    print('stdout:', e.stdout.decode('utf8'))
+    print('stderr:', e.stderr.decode('utf8'))
+    raise e
   video_info = next(stream for stream in probe['streams']
                     if stream['codec_type'] == 'video')
   width = int(video_info['width'])
