@@ -109,7 +109,7 @@ def unify_joint_mappings(dataset='openpose25'):
 class SMPLRegressor:
   """SMPL fitting based on 3D keypoints."""
 
-  def __init__(self, smpl_model_path, smpl_model_gener='MALE'):
+  def __init__(self, smpl_model_path, smpl_model_gener='NEUTRAL'):
     # Fitting hyper-parameters
     self.base_lr = 100.0
     self.niter = 10000

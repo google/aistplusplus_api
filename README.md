@@ -10,7 +10,6 @@ this repo by:
 pip install -r requirements.txt
 python setup.py install
 ```
-You also need to make sure [ffmpeg](https://ffmpeg.org/download.html) is installed on your machine, if you would like to visualize the annotations using this api.
 
 ## How to use
 We provide demo code for loading and visualizing AIST++ annotations. 
@@ -32,8 +31,7 @@ The directory structure of the data is expected to be:
 └── *.mp4
 
 <SMPL_DIR>
-├── SMPL_MALE.pkl
-└── SMPL_FEMALE.pkl
+└── SMPL_NEUTRAL.pkl
 ```
 
 #### Visualize 2D keypoints annotation
