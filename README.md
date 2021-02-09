@@ -4,8 +4,7 @@ This repo contains starter code for using the AIST++ dataset. To download the
 dataset or explore details of this dataset, please go to our dataset [website](https://google.github.io/aistplusplus_dataset).
 
 ## Installation
-The code has been tested on `python>=3.7`. You can install the dependencies and
-this repo by:
+The code has been tested on `python>=3.7`. You can install the dependencies and this repo by:
 ``` bash
 pip install -r requirements.txt
 python setup.py install
@@ -107,6 +106,9 @@ python processing/run_preprocessing.py \
 is optional as you can still use our camera parameter estimates which are
 quite accurate. At this step, you will need the `<ANNOTATIONS_DIR>/cameras/mapping.txt` file which stores the mapping from videos to different environment settings.
 ``` bash
+# install some additional libraries
+pip install -r processing/requirements.txt
+
 # If you would like to estimate your own camera parameters:
 python processing/run_estimate_camera.py \
   --anno_dir <ANNOTATIONS_DIR> \
