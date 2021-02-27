@@ -44,7 +44,7 @@ flags.DEFINE_string(
     '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/tmp/',
     'output local dictionary that stores AIST++ visualization.')
 flags.DEFINE_enum(
-    'mode', '2D', ['2D', '3D', 'SMPL'],
+    'mode', '2D', ['2D', '3D', 'SMPL', 'SMPLMesh'],
     'visualize 3D or 2D keypoints, or SMPL joints on image plane.')
 
 
@@ -86,6 +86,23 @@ def main(_):
     cgroup = AISTDataset.load_camera_group(aist_dataset.camera_dir, env_name)
     keypoints2d = cgroup.project(keypoints3d)
     keypoints2d = keypoints2d.reshape(9, nframes, njoints, 2)[view_idx]
+
+  elif FLAGS.mode == 'SMPLMesh':  # SMPL Mesh
+    import trimesh  # install by `pip install trimesh`
+    import vedo  # install by `pip install vedo`
+    smpl_poses, smpl_scaling, smpl_trans = AISTDataset.load_motion(
+        aist_dataset.motion_dir, seq_name)
+    smpl = SMPL(model_path=FLAGS.smpl_dir, gender='MALE', batch_size=1)
+    vertices = smpl.forward(
+        global_orient=torch.from_numpy(smpl_poses[:, 0:1]).float(),
+        body_pose=torch.from_numpy(smpl_poses[:, 1:]).float(),
+        transl=torch.from_numpy(smpl_trans).float(),
+        scaling=torch.from_numpy(smpl_scaling.reshape(1, 1)).float(),
+        ).joints.detach().numpy()[0]
+    faces = smpl.faces
+    mesh = trimesh.Trimesh(vertices, faces)
+    vedo.show(mesh, interactive=True)
+
 
   # Visualize.
   os.makedirs(FLAGS.save_dir, exist_ok=True)
