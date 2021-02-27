@@ -74,6 +74,21 @@ python demos/run_vis.py \
   --mode SMPL
 ```
 
+#### Visualize the SMPL Mesh
+The command below will calculate the first frame SMPL mesh from our motion
+annotations (joint rotations and root trajectories), and visualize in 3D. 
+``` bash
+# install some additional libraries for 3D mesh visualization
+pip install vedo trimesh
+
+python demos/run_vis.py \
+  --anno_dir <ANNOTATIONS_DIR> \
+  --smpl_dir <SMPL_DIR> \
+  --video_name gWA_sFM_c01_d27_mWA2_ch21 \ 
+  --mode SMPLMesh
+```
+
+
 #### Multi-view 3D keypoints and motion reconstruction
 
 This repo also provides code we used for constructing this dataset from the

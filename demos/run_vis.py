@@ -98,8 +98,9 @@ def main(_):
         body_pose=torch.from_numpy(smpl_poses[:, 1:]).float(),
         transl=torch.from_numpy(smpl_trans).float(),
         scaling=torch.from_numpy(smpl_scaling.reshape(1, 1)).float(),
-        ).joints.detach().numpy()[0]
+        ).vertices.detach().numpy()[0]  # first frame
     faces = smpl.faces
+    print (vertices.shape, faces.shape)
     mesh = trimesh.Trimesh(vertices, faces)
     vedo.show(mesh, interactive=True)
 
