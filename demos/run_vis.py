@@ -103,7 +103,7 @@ def main(_):
     print (vertices.shape, faces.shape)
     mesh = trimesh.Trimesh(vertices, faces)
     vedo.show(mesh, interactive=True)
-
+    exit()
 
   # Visualize.
   os.makedirs(FLAGS.save_dir, exist_ok=True)
