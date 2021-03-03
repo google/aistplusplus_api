@@ -91,16 +91,18 @@ def unify_joint_mappings(dataset='openpose25'):
         22, 24,
     ], dtype=np.int32)
   elif dataset == 'smpl':
+    # note SMPL needs to be "left-right flipped" to be consistent
+    # with others
     return np.array([
         24,
-        17, 19, 21,
         16, 18, 20,
-        2, 5, 8,
+        17, 19, 21,
         1, 4, 7,
-        25, 26,
-        27, 28,
-        29, 31,
+        2, 5, 8,
+        26, 25,
+        28, 27,
         32, 34,
+        29, 31,
     ], dtype=np.int32)
   elif dataset == 'coco':
     return np.array([
@@ -190,7 +192,7 @@ class SMPLRegressor:
 
       if verbose and step % 10 == 0:
         logging.info(f'step {step:03d}; loss {loss.item():.3f};')
-      
+
       if FLAGS.visualize:
         vertices = output.vertices[0].detach().cpu().numpy()  # first frame
         mesh = trimesh.Trimesh(vertices, smpl.faces)
