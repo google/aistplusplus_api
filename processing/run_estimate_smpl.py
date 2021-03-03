@@ -24,6 +24,12 @@ import numpy as np
 from smplx import SMPL
 import torch
 
+try:
+    import vedo, trimesh
+    SUPPORT_VIS = True
+except:
+    SUPPORT_VIS = False
+
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'anno_dir',
@@ -45,6 +51,10 @@ flags.DEFINE_string(
     'save_dir_gcs',
     None,
     'output GCS directory.')
+flags.DEFINE_bool(
+    'visualize',
+    False,
+    'Wether to visualize the fitting process.')
 np.random.seed(0)
 torch.manual_seed(0)
 
@@ -180,12 +190,22 @@ class SMPLRegressor:
 
       if verbose and step % 10 == 0:
         logging.info(f'step {step:03d}; loss {loss.item():.3f};')
+      
+      if FLAGS.visualize:
+        vertices = output.vertices[0].detach().cpu().numpy()  # first frame
+        mesh = trimesh.Trimesh(vertices, smpl.faces)
+        mesh.visual.face_colors = [200, 200, 250, 100]
+        pts = vedo.Points(keypoints3d[0].detach().cpu().numpy(), r=20)  # first frame
+        vedo.show(mesh, pts, interactive=False)
 
     # Return results
     return smpl, loss.item()
 
 
 def main(_):
+  if FLAGS.visualize:
+    assert SUPPORT_VIS, "--visualize is not support! Fail to import vedo or trimesh."
+
   aist_dataset = AISTDataset(FLAGS.anno_dir)
   smpl_regressor = SMPLRegressor(FLAGS.smpl_dir, 'MALE')
 
