@@ -47,7 +47,7 @@ def extract_manual_features(positions):
     assert len(positions.shape) == 3  # (seq_len, n_joints, 3) 
     features = []
     f = ManualFeatures(positions)
-    for _ in range(1, positions.shape[0], 30):
+    for _ in range(1, positions.shape[0]):
         pose_features = []
         pose_features.append(
             f.f_nmove("neck", "rhip", "lhip", "rwrist", 1.8 * f.hl)
