@@ -19,6 +19,7 @@ import pickle
 
 import aniposelib
 import numpy as np
+import cv2
 
 
 class AISTDataset:
@@ -114,7 +115,41 @@ class AISTDataset:
     assert os.path.exists(file_path), f'File {file_path} does not exist!'
     with open(file_path, 'rb') as f:
       data = pickle.load(f)
-    keypoints2d = data['keypoints2d']  # (nviews, N, 17, 3)
-    det_scores = data['det_scores']  # (nviews, N)
-    timestamps = data['timestamps']  # (N,)
-    return keypoints2d, det_scores, timestamps
+    if 'det_scores' in data:
+      keypoints2d = data['keypoints2d']  # (nviews, N, 17, 3)
+      det_scores = data['det_scores']  # (nviews, N)
+      timestamps = data['timestamps']  # (N,)
+      return keypoints2d, det_scores, timestamps
+    else:
+      keypoints2d = data['keypoints2d']  # (nviews, nframes, (nsubjects, (133, 3)))
+      bboxes = data['bboxes']  # (nviews, (nframes, (nsubjects, (5,))))
+      timestamps = data['timestamps']  # (nviews, (nframes,))
+      return keypoints2d, bboxes, timestamps
+
+  @classmethod
+  def load_frames(cls, video_path, frame_ids=None, fps=60):
+    """Load a single or multiple frames from a video."""
+    if frame_ids is None:
+      frame_ids = range(1e6)
+    assert isinstance(frame_ids, list)
+    if not os.path.exists(video_path):
+      return None
+    cap = cv2.VideoCapture(video_path)
+    assert cap.isOpened(), "check if your opencv is installed with ffmpeg supported."
+
+    images = []
+    for frame_id in frame_ids:
+      sec = frame_id * 1.0 / fps
+      cap.set(cv2.CAP_PROP_POS_MSEC, (sec * 1000))
+      success, image = cap.read()
+      if not success:
+        break
+      images.append(image)
+
+    if len(images) > 0:
+      images = np.stack(images)
+    else:
+      images = None
+
+    cap.release()
+    return images

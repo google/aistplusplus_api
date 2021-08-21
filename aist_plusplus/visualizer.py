@@ -25,13 +25,13 @@ _COLORS = [[255, 0, 0], [255, 85, 0], [255, 170, 0], [255, 255, 0],
            [255, 0, 170], [255, 0, 85]]
 
 
-def plot_kpt(keypoint, canvas):
+def plot_kpt(keypoint, canvas, color=None):
   for i, (x, y) in enumerate(keypoint[:, 0:2]):
     if np.isnan(x) or np.isnan(y):
       continue
     cv2.circle(canvas, (int(x), int(y)),
                7,
-               _COLORS[i % len(_COLORS)],
+               color if color is not None else _COLORS[i % len(_COLORS)],
                thickness=-1)
   return canvas
 
