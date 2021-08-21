@@ -88,6 +88,14 @@ python demos/run_vis.py \
   --mode SMPLMesh
 ```
 
+#### Extract SMPL motion features
+The command below will calculate and print two types of features for a motion sequence in SMPL format. We take reference from [fairmotion](https://github.com/facebookresearch/fairmotion/tree/master/fairmotion/tasks/clustering) to calculate the features.
+``` bash
+python demos/extract_motion_feats.py \
+  --anno_dir <ANNOTATIONS_DIR> \
+  --smpl_dir <SMPL_DIR> \
+  --video_name gWA_sFM_c01_d27_mWA2_ch21
+```
 
 #### Multi-view 3D keypoints and motion reconstruction
 
