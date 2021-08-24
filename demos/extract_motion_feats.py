@@ -46,12 +46,12 @@ def main(_):
   smpl_poses, smpl_scaling, smpl_trans = AISTDataset.load_motion(
       aist_dataset.motion_dir, seq_name)
   smpl = SMPL(model_path=FLAGS.smpl_dir, gender='MALE', batch_size=1)
-  # skip scaling because manual features are extracted in SMPL scale.
+  # Note here we calculate `transl` as `smpl_trans/smpl_scaling` for 
+  # normalizing the motion in generic SMPL model scale.
   keypoints3d = smpl.forward(
       global_orient=torch.from_numpy(smpl_poses[:, 0:1]).float(),
       body_pose=torch.from_numpy(smpl_poses[:, 1:]).float(),
-      transl=torch.from_numpy(smpl_trans).float(),
-      # scaling=torch.from_numpy(smpl_scaling.reshape(1, 1)).float(),
+      transl=torch.from_numpy(smpl_trans / smpl_scaling).float(),
       ).joints.detach().numpy()
   
   # extract features
