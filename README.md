@@ -174,11 +174,15 @@ In practise, we run this step on a cluster, but are only able to provide the sin
 - SMPL-format body joint definition:
 ```
 [
-"root", 
-"left_hip", "left_knee", "left_foot", "left_toe", 
-"right_hip", "right_knee", "right_foot", "right_toe",
-"waist", "spine", "chest", "neck", "head", 
-"left_in_shoulder", "left_shoulder", "left_elbow", "left_wrist",
-"right_in_shoulder", "right_shoulder", "right_elbow", "right_wrist"
+"root",     
+"lhip", "rhip", "belly",    
+"lknee", "rknee", "spine",    
+"lankle", "rankle", "chest",     
+"ltoes", "rtoes", "neck", 
+"linshoulder", "rinshoulder",     
+"head",  "lshoulder", "rshoulder",      
+"lelbow", "relbow",      
+"lwrist", "rwrist",     
+"lhand", "rhand",
 ]
 ```

@@ -34,12 +34,16 @@ from . import utils as feat_utils
 
 
 SMPL_JOINT_NAMES = [
-    "root", 
-    "lhip", "lknee", "lankle", "ltoes", 
-    "rhip", "rknee", "rankle", "rtoes",
-    "belly", "spine", "chest", "neck", "head", 
-    "linshoulder", "lshoulder", "lelbow", "lwrist",
-    "rinshoulder", "rshoulder", "relbow", "rwrist"
+    "root",     
+    "lhip", "rhip", "belly",    
+    "lknee", "rknee", "spine",    
+    "lankle", "rankle", "chest",     
+    "ltoes", "rtoes", "neck", 
+    "linshoulder", "rinshoulder",     
+    "head",  "lshoulder", "rshoulder",      
+    "lelbow", "relbow",      
+    "lwrist", "rwrist",     
+    "lhand", "rhand",
 ]
 
 
@@ -151,18 +155,18 @@ class ManualFeatures:
 
         # humerus length
         self.hl = feat_utils.distance_between_points(
-            [0.00121265,  0.37817603,  0.03681623],  # "lshoulder",
-            [0.19911349,  0.23680794, -0.01807022],  # "lelbow"
+            [1.99113488e-01,  2.36807942e-01, -1.80702247e-02],  # "lshoulder",
+            [4.54445392e-01,  2.21158922e-01, -4.10167128e-02],  # "lelbow"
         )
         # shoulder width
         self.sw = feat_utils.distance_between_points(
-            [0.00121265,  0.37817603,  0.03681623],  # "lshoulder"
-            [-0.45181984,  0.2225595,  -0.04357424],  # "rshoulder"
+            [1.99113488e-01,  2.36807942e-01, -1.80702247e-02],  # "lshoulder"
+            [-1.91692337e-01,  2.36928746e-01, -1.23055102e-02,],  # "rshoulder"
         )
         # hip width
         self.hw = feat_utils.distance_between_points(
-            [0.05640767, -0.32306919,  0.01091971],  # "lhip"
-            [-0.10574003, -0.7149903,  0.01019822],  # "rhip"
+            [5.64076714e-02, -3.23069185e-01,  1.09197125e-02],  # "lhip"
+            [-6.24834076e-02, -3.31302464e-01,  1.50412619e-02],  # "rhip"
         )
 
     def next_frame(self):
