@@ -45,7 +45,7 @@ def ffmpeg_video_read(video_path, fps=None):
   height = int(video_info['height'])
   stream = ffmpeg.input(video_path)
   if fps:
-    stream = ffmpeg.filter(stream, 'fps', fps=fps, round='up')
+    stream = ffmpeg.filter(stream, 'fps', fps=fps, round='down')
   stream = ffmpeg.output(stream, 'pipe:', format='rawvideo', pix_fmt='rgb24')
   out, _ = ffmpeg.run(stream, capture_stdout=True)
   out = np.frombuffer(out, np.uint8).reshape([-1, height, width, 3])
