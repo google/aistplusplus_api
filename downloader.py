@@ -12,7 +12,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Download AIST++ videos from AIST Dance Video Database website."""
+"""Download AIST++ videos from AIST Dance Video Database website.
+
+Be aware: Before running this script to download the videos, you should have read
+the Terms of Use of the AIST Dance Video Database here:
+
+https://aistdancedb.ongaaccel.jp/terms_of_use/
+"""
 import argparse
 import multiprocessing
 import os
@@ -26,7 +32,7 @@ LIST_URL = 'https://storage.googleapis.com/aist_plusplus_public/20121228/video_l
 def _download(video_url, download_folder):
   save_path = os.path.join(download_folder, os.path.basename(video_url))
   urllib.request.urlretrieve(video_url, save_path)
-  
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
       description='Scripts for downloading AIST++ videos.')
@@ -41,6 +47,21 @@ if __name__ == '__main__':
       default=1,
       help='number of threads for multiprocessing.')
   args = parser.parse_args()
+
+  ans = input(
+      "Before running this script, please make sure you have read the <Terms of Use> "
+      "of AIST Dance Video Database at here: \n"
+      "\n"
+      "https://aistdancedb.ongaaccel.jp/terms_of_use/\n"
+      "\n"
+      "Do you agree with the <Terms of Use>? [Y/N]"
+  )
+  if ans in ["Yes", "YES", "yes", "Y", "y"]:
+    pass
+  else:
+    print ("Program exit. Please first acknowledge the <Terms of Use>.")
+    exit()
+
   os.makedirs(args.download_folder, exist_ok=True)
 
   seq_names = urllib.request.urlopen(LIST_URL)
