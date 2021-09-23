@@ -5,3 +5,6 @@ opencv-python
 git+https://github.com/liruilong940607/aniposelib
 git+https://github.com/liruilong940607/smplx
 ffmpeg-python
+trimesh
+vedo
+chumpy
