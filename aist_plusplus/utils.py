@@ -75,3 +75,25 @@ def ffmpeg_video_write(data, video_path, fps=25):
     writer.stdin.write(frame.astype(np.uint8).tobytes())
   writer.stdin.close()
 
+
+def ffmpeg_video_to_images(video_path, image_dir, fps=None) -> None:
+  """Video to images converter based on FFMPEG.
+
+  This function supports setting fps for video reading. It is critical
+  as AIST++ Dataset are constructed under exact 60 fps, while some of
+  the AIST dance videos are not percisely 60 fps.
+
+  Args:
+    video_path: A video file.
+    image_dir: A output directory to store the images.
+    fps: Use specific fps for video reading. (optional)
+  """
+  assert os.path.exists(video_path), f'{video_path} does not exist!'
+  os.makedirs(image_dir, exist_ok=True)
+  stream = ffmpeg.input(video_path)
+  if fps:
+    stream = ffmpeg.filter(stream, 'fps', fps=fps, round='down')
+  stream = ffmpeg.output(
+    stream, os.path.join(image_dir, '%08d.jpg'), start_number=0)
+  stream = ffmpeg.overwrite_output(stream)
+  ffmpeg.run(stream, quiet=True)
