@@ -25,20 +25,32 @@ import numpy as np
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'anno_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/',
+    '/home/ruilongli/data/AIST++_openpose/',
     'input local dictionary for AIST++ annotations.')
 flags.DEFINE_string(
     'save_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/keypoints3d/',
+    '/home/ruilongli/data/AIST++_openpose/keypoints3d/',
     'output local dictionary that stores AIST++ 3D keypoints.')
+flags.DEFINE_enum(
+    'data_type',
+    'openpose',
+    ['internal', 'openpose'],
+    'Which openpose detector is being used.'
+)
+
 np.random.seed(0)
 
 
 def main(_):
   aist_dataset = AISTDataset(anno_dir=FLAGS.anno_dir)
 
-  for seq_name, env_name in aist_dataset.mapping_seq2env.items():
+  seq_names = [
+    file_name.split(".")[0] 
+    for file_name in os.listdir(aist_dataset.keypoint2d_dir)]
+
+  for seq_name in seq_names:
     logging.info('processing %s', seq_name)
+    env_name = aist_dataset.mapping_seq2env[seq_name]
 
     # Load camera parameters
     cgroup = AISTDataset.load_camera_group(aist_dataset.camera_dir, env_name)
@@ -64,10 +76,31 @@ def main(_):
     keypoints2d = keypoints2d[:, :, :, 0:2]
 
     # 3D pose triangulation and temporal optimization.
-    bones = [
-        (5, 7), (7, 9), (6, 8), (8, 10), (11, 13), (13, 15), (12, 14),
-        (14, 16), (0, 1), (0, 2), (1, 2), (0, 3), (0, 4), (3, 4),
-    ]  # COCO-format bone constrains
+    if FLAGS.data_type == "internal":
+      # COCO-format bone constrains
+      bones = [
+          (5, 7), (7, 9), (6, 8), (8, 10), (11, 13), (13, 15), (12, 14),
+          (14, 16), (0, 1), (0, 2), (1, 2), (0, 3), (0, 4), (3, 4),
+      ]
+    elif FLAGS.data_type == "openpose":
+      # https://cmu-perceptual-computing-lab.github.io/openpose/web/html/doc/md_doc_02_output.html
+      body_bones = np.array([
+          (0, 15), (0, 16), (15, 17), (16, 18),
+          (0, 1), (1, 2), (2, 3), (3, 4), (1, 5), (5, 6), (6, 7), (1, 8), 
+          (8, 9), (9, 10), (10, 11), (11, 24), (11, 22), (22, 23),
+          (8, 12), (12, 13), (13, 14), (14, 21), (14, 19), (19, 20),
+      ])
+      hand_bones = np.array([
+          (0, 1), (1, 2), (2, 3), (3, 4),
+          (0, 5), (5, 6), (6, 7), (7, 8),
+          (0, 9), (9, 10), (10, 11), (11, 12),
+          (0, 13), (13, 14), (14, 15), (15, 16),
+          (0, 17), (17, 18), (18, 19), (19, 20)
+      ])
+      bones = np.concatenate([
+          body_bones, hand_bones + 25, body_bones + 25 + 21]).tolist()
+    else:
+      raise ValueError(FLAGS.data_type)
     keypoints3d = cgroup.triangulate(
         keypoints2d.reshape(nviews, -1, 2)
     ).reshape(nframes, -1, 3)

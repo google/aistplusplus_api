@@ -40,7 +40,7 @@ flags.DEFINE_string(
     'output local dictionary that stores AIST images.')
 flags.DEFINE_string(
     'openpose_save_dir',
-    '/home/ruilongli/data/AIST++/openpose',
+    '/home/ruilongli/data/AIST++_openpose/openpose',
     'output local dictionary that stores AIST++ openpose results.')
 
 

@@ -28,15 +28,20 @@ import numpy as np
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'keypoints_dir',
-    '/usr/local/google/home/ruilongli/data/AIST_plusplus_v4/posenet_2stage_pose_10M_60fps_all/',
+    '/home/ruilongli/data/AIST++_openpose/openpose/',
     'input local dictionary that stores 2D keypoints detection results in json.'
 )
 flags.DEFINE_string(
     'save_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/keypoints2d/',
+    '/home/ruilongli/data/AIST++_openpose/keypoints2d/',
     'output local dictionary that stores 2D keypoints detection results in pkl.'
 )
-np.random.seed(0)
+flags.DEFINE_enum(
+    'data_type',
+    'openpose',
+    ['internal', 'openpose'],
+    'Which openpose detector is being used.'
+)
 
 
 def array_nan(shape, dtype=np.float32):
@@ -45,7 +50,7 @@ def array_nan(shape, dtype=np.float32):
   return array
 
 
-def load_keypoints2d_file(file_path, njoints=17):
+def load_keypoints2d_file(file_path):
   """load 2D keypoints from keypoint detection results.
 
   Only one person is extracted from the results. If there are multiple
@@ -59,6 +64,13 @@ def load_keypoints2d_file(file_path, njoints=17):
   Returns:
     A `np.array` with the shape of [njoints, 3].
   """
+  if FLAGS.data_type == "internal":
+    njoints = 17
+  elif FLAGS.data_type == "openpose":
+    njoints = 25 + 21 + 21
+  else:
+    raise ValueError(FLAGS.data_type)
+
   keypoint = array_nan((njoints, 3), dtype=np.float32)
   det_score = 0.0
 
@@ -69,8 +81,23 @@ def load_keypoints2d_file(file_path, njoints=17):
     logging.warning(e)
     return keypoint, det_score
 
-  det_scores = np.array(data['detection_scores'])
-  keypoints = np.array(data['keypoints']).reshape((-1, njoints, 3))
+  if FLAGS.data_type == "internal":
+    keypoints = np.array(data['keypoints']).reshape((-1, njoints, 3))
+    det_scores = np.array(data['detection_scores'])
+  elif FLAGS.data_type == "openpose":
+    keypoints = []
+    for person in data["people"]:
+      # npoints: 25, 70, 21, 21
+      # for key in ["pose", "face", "hand_left", "hand_right"]:
+      for key in ["pose", "hand_left", "hand_right"]:
+        keypoints.extend(person["%s_keypoints_2d" % key])
+    keypoints = np.array(keypoints).reshape(len(data["people"]), -1, 3)
+    assert keypoints.shape[1] == njoints, (
+      "The shape is not right. %s v.s. %d" (str(keypoints.shape), njoints)
+    )
+    det_scores = np.mean(keypoints[:, 0:25, -1], axis=-1)
+  else:
+    raise ValueError(FLAGS.data_type)
 
   # The detection results may contain zero person or multiple people.
   if det_scores.shape[0] == 0:
@@ -85,7 +112,7 @@ def load_keypoints2d_file(file_path, njoints=17):
     return keypoint, det_score
 
 
-def load_keypoints2d(data_dir, seq_name, njoints=17):
+def load_keypoints2d(data_dir, seq_name):
   """Load 2D keypoints predictions for a set of multi-view videos."""
   # Parsing sequence name to multi-view video names
   video_names = [AISTDataset.get_video_name(seq_name, view)
@@ -98,21 +125,36 @@ def load_keypoints2d(data_dir, seq_name, njoints=17):
   for video_name in video_names:
     paths = sorted(glob.glob(os.path.join(data_dir, video_name, '*.json')))
     paths_cache[video_name] = paths
-    timestamps += [int(p.split('.')[0].split('_')[-1]) for p in paths]
+    if FLAGS.data_type == "internal":
+      timestamps += [
+        int(os.path.basename(p).split('.')[0].split('_')[-1]) for p in paths]
+    elif FLAGS.data_type == "openpose":
+      timestamps += [
+        int(os.path.basename(p).split('.')[0].split('_')[0]) for p in paths]
+    else:
+      raise ValueError(FLAGS.data_type)
   timestamps = np.array(sorted(list(set(timestamps))))  # (N,)
 
   # Then we load all frames according to timestamps.
   keypoints2d = []
   det_scores = []
   for video_name in video_names:
-    paths = [
-        os.path.join(data_dir, video_name, f'{video_name}_{ts}.json')
-        for ts in timestamps
-    ]
+    if FLAGS.data_type == "internal":
+      paths = [
+          os.path.join(data_dir, video_name, f'{video_name}_{ts}.json')
+          for ts in timestamps
+      ]
+    elif FLAGS.data_type == "openpose":
+      paths = [
+          os.path.join(data_dir, video_name, f'{ts:08d}_keypoints.json')
+          for ts in timestamps
+      ]
+    else:
+      raise ValueError(FLAGS.data_type)
     keypoints2d_per_view = []
     det_scores_per_view = []
     for path in paths:
-      keypoint, det_score = load_keypoints2d_file(path, njoints=njoints)
+      keypoint, det_score = load_keypoints2d_file(path)
       keypoints2d_per_view.append(keypoint)
       det_scores_per_view.append(det_score)
     keypoints2d.append(keypoints2d_per_view)
@@ -127,7 +169,7 @@ def load_keypoints2d(data_dir, seq_name, njoints=17):
 
 def process_and_save(seq_name):
   keypoints2d, det_scores, timestamps = load_keypoints2d(
-      FLAGS.keypoints_dir, seq_name=seq_name, njoints=17)
+      FLAGS.keypoints_dir, seq_name=seq_name)
   os.makedirs(FLAGS.save_dir, exist_ok=True)
   save_path = os.path.join(FLAGS.save_dir, f'{seq_name}.pkl')
   with open(save_path, 'wb') as f:
