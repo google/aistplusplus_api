@@ -76,7 +76,7 @@ def ffmpeg_video_write(data, video_path, fps=25):
   writer.stdin.close()
 
 
-def ffmpeg_video_to_images(video_path, image_dir, fps=None) -> None:
+def ffmpeg_video_to_images(video_path, image_dir, fps=None, ext=".jpg") -> None:
   """Video to images converter based on FFMPEG.
 
   This function supports setting fps for video reading. It is critical
@@ -94,7 +94,7 @@ def ffmpeg_video_to_images(video_path, image_dir, fps=None) -> None:
   if fps:
     stream = ffmpeg.filter(stream, 'fps', fps=fps, round='down')
   stream = ffmpeg.output(
-    stream, os.path.join(image_dir, '%08d.jpg'), start_number=0)
+    stream, os.path.join(image_dir, '%08d' + ext), start_number=0)
   stream = ffmpeg.overwrite_output(stream)
   ffmpeg.run(stream, quiet=True)
 

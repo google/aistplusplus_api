@@ -93,7 +93,7 @@ def main(_):
                     input_source=video_file,         # A video file or an image sequence directory.
                     downsample_ratio=None,           # [Optional] If None, make downsampled max size be 512px.
                     output_type='video',             # Choose "video" or "png_sequence"
-                    output_alpha=alpha_file,        # [Optional] Output the raw alpha prediction.
+                    output_alpha=alpha_file,         # [Optional] Output the raw alpha prediction.
                     output_video_mbps=4,             # Output video mbps. Not needed for png sequence.
                     seq_chunk=12,                    # Process n frames at once for better parallelism.
                     num_workers=1,                   # Only for image sequence input. Reader threads.
