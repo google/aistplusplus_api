@@ -26,6 +26,11 @@ from aist_plusplus.loader import AISTDataset
 import numpy as np
 
 FLAGS = flags.FLAGS
+
+flags.DEFINE_list(
+    'sequence_names',
+    None,
+    'list of sequence names to be processed. None means to process all.')
 flags.DEFINE_string(
     'keypoints_dir',
     '/home/ruilongli/data/AIST++_openpose/openpose/',
@@ -67,7 +72,7 @@ def load_keypoints2d_file(file_path):
   if FLAGS.data_type == "internal":
     njoints = 17
   elif FLAGS.data_type == "openpose":
-    njoints = 25 + 21 + 21
+    njoints = 25
   else:
     raise ValueError(FLAGS.data_type)
 
@@ -89,7 +94,7 @@ def load_keypoints2d_file(file_path):
     for person in data["people"]:
       # npoints: 25, 70, 21, 21
       # for key in ["pose", "face", "hand_left", "hand_right"]:
-      for key in ["pose", "hand_left", "hand_right"]:
+      for key in ["pose"]:
         keypoints.extend(person["%s_keypoints_2d" % key])
     keypoints = np.array(keypoints).reshape(len(data["people"]), -1, 3)
     assert keypoints.shape[1] == njoints, (
@@ -181,13 +186,11 @@ def process_and_save(seq_name):
 
 
 def main(_):
-  video_names = os.listdir(FLAGS.keypoints_dir)
-  video_names = [
-      video_name for video_name in video_names
-      if len(video_name.split('_')) == 6
-  ]
-  seq_names = list(set([
-      AISTDataset.get_seq_name(video_name)[0] for video_name in video_names]))
+  if FLAGS.sequence_names:
+      seq_names = FLAGS.sequence_names
+  else:
+      aist_dataset = AISTDataset(FLAGS.anno_dir)
+      seq_names = aist_dataset.mapping_seq2env.keys()
 
   pool = multiprocessing.Pool(16)
   pool.map(process_and_save, seq_names)

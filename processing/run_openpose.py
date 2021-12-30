@@ -22,10 +22,14 @@ from aist_plusplus.loader import AISTDataset
 from aist_plusplus.utils import ffmpeg_video_to_images
 
 FLAGS = flags.FLAGS
+flags.DEFINE_list(
+    'sequence_names',
+    None,
+    'list of sequence names to be processed. None means to process all.')
 flags.DEFINE_string(
-    'seq_name',
-    'gKR_sFM_cAll_d29_mKR5_ch14',
-    'input video name to be visualized.')
+    'anno_dir',
+    '/home/ruilongli/data/AIST++_openpose/',
+    'input local dictionary for AIST++ annotations.')
 flags.DEFINE_string(
     'openpose_dir',
     '/home/ruilongli/workspace/openpose',
@@ -47,28 +51,34 @@ flags.DEFINE_string(
 def main(_):
     os.makedirs(FLAGS.image_save_dir, exist_ok=True)
     os.makedirs(FLAGS.openpose_save_dir, exist_ok=True)
-    for view in AISTDataset.VIEWS:
-        video_name = AISTDataset.get_video_name(FLAGS.seq_name, view)
-        video_file = os.path.join(FLAGS.video_dir, video_name + ".mp4")
-        if not os.path.exists(video_file):
-            continue
-        logging.info('processing %s', video_file)
-        
-        # extract images
-        image_dir = os.path.join(FLAGS.image_save_dir, video_name)
-        ffmpeg_video_to_images(video_file, image_dir, fps=60)
-        
-        # extract keypoints
-        save_dir = os.path.join(FLAGS.openpose_save_dir, video_name)
-        os.system(
-            "cd %s; " % FLAGS.openpose_dir +
-            "./build/examples/openpose/openpose.bin " +
-                "--image_dir %s " % image_dir +
-                "--write_json %s " % save_dir +
-                "--display 0 --hand --face --render_pose 0"
-        )
 
-        # break
+    if FLAGS.sequence_names:
+        seq_names = FLAGS.sequence_names
+    else:
+        aist_dataset = AISTDataset(FLAGS.anno_dir)
+        seq_names = aist_dataset.mapping_seq2env.keys()
+
+    for seq_name in seq_names:
+        for view in AISTDataset.VIEWS:
+            video_name = AISTDataset.get_video_name(seq_name, view)
+            video_file = os.path.join(FLAGS.video_dir, video_name + ".mp4")
+            if not os.path.exists(video_file):
+                continue
+            logging.info('processing %s', video_file)
+            
+            # extract images
+            image_dir = os.path.join(FLAGS.image_save_dir, video_name)
+            ffmpeg_video_to_images(video_file, image_dir, fps=60)
+            
+            # extract keypoints
+            save_dir = os.path.join(FLAGS.openpose_save_dir, video_name)
+            os.system(
+                "cd %s; " % FLAGS.openpose_dir +
+                "./build/examples/openpose/openpose.bin " +
+                    "--image_dir %s " % image_dir +
+                    "--write_json %s " % save_dir +
+                    "--display 0 --hand --face --render_pose 0"
+            )
 
 if __name__ == '__main__':
     app.run(main)

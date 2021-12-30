@@ -20,6 +20,7 @@ from absl import app
 from absl import flags
 from absl import logging
 from aist_plusplus.loader import AISTDataset
+from aist_plusplus.utils import unify_joint_mappings
 import numpy as np
 from smplx import SMPL
 import torch
@@ -31,91 +32,33 @@ except:
     SUPPORT_VIS = False
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string(
-    'anno_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/',
-    'input local dictionary for AIST++ annotations.')
-flags.DEFINE_string(
-    'smpl_dir',
-    '/usr/local/google/home/ruilongli/data/SMPL/',
-    'input local dictionary that stores SMPL data.')
-flags.DEFINE_string(
-    'save_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/motions/',
-    'output local dictionary that stores AIST++ SMPL-format motion data.')
 flags.DEFINE_list(
     'sequence_names',
     None,
     'list of sequence names to be processed. None means to process all.')
 flags.DEFINE_string(
-    'save_dir_gcs',
-    None,
-    'output GCS directory.')
+    'anno_dir',
+    '/home/ruilongli/data/AIST++_openpose/',
+    'input local dictionary for AIST++ annotations.')
+flags.DEFINE_string(
+    'smpl_dir',
+    '/home/ruilongli/data/smpl_model/smpl/',
+    'input local dictionary that stores SMPL data.')
+flags.DEFINE_string(
+    'save_dir',
+    '/home/ruilongli/data/AIST++_openpose/motions/',
+    'output local dictionary that stores AIST++ SMPL-format motion data.')
 flags.DEFINE_bool(
     'visualize',
     False,
     'Wether to visualize the fitting process.')
+flags.DEFINE_enum(
+    'data_type',
+    'openpose',
+    ['internal', 'openpose'],
+    'Which openpose detector is being used.')
 np.random.seed(0)
 torch.manual_seed(0)
-
-
-def unify_joint_mappings(dataset='openpose25'):
-  """Unify different joint definations.
-
-  Output unified defination:
-      ['Nose',
-      'RShoulder', 'RElbow', 'RWrist',
-      'LShoulder', 'LElbow', 'LWrist',
-      'RHip', 'RKnee', 'RAnkle',
-      'LHip', 'LKnee', 'LAnkle',
-      'REye', 'LEye',
-      'REar', 'LEar',
-      'LBigToe', 'LHeel',
-      'RBigToe', 'RHeel',]
-
-  Args:
-    dataset: `openpose25`, `coco`(17) and `smpl`.
-  Returns:
-    a list of indexs that maps the joints to a unified defination.
-  """
-  if dataset == 'openpose25':
-    return np.array([
-        0,
-        2, 3, 4,
-        5, 6, 7,
-        9, 10, 11,
-        12, 13, 14,
-        15, 16,
-        17, 18,
-        19, 21,
-        22, 24,
-    ], dtype=np.int32)
-  elif dataset == 'smpl':
-    # note SMPL needs to be "left-right flipped" to be consistent
-    # with others
-    return np.array([
-        24,
-        16, 18, 20,
-        17, 19, 21,
-        1, 4, 7,
-        2, 5, 8,
-        26, 25,
-        28, 27,
-        32, 34,
-        29, 31,
-    ], dtype=np.int32)
-  elif dataset == 'coco':
-    return np.array([
-        0,
-        5, 7, 9,
-        6, 8, 10,
-        11, 13, 15,
-        12, 14, 16,
-        1, 2,
-        3, 4,
-    ], dtype=np.int32)
-  else:
-    raise ValueError(f'{dataset} is not supported')
 
 
 class SMPLRegressor:
@@ -165,7 +108,6 @@ class SMPLRegressor:
 
   def fit(self, keypoints3d, dtype='coco', verbose=True):
     """Run fitting to optimize the SMPL parameters."""
-    assert dtype == 'coco', 'only support coco format for now.'
     assert len(keypoints3d.shape) == 3, 'input shape should be [N, njoints, 3]'
     mapping_target = unify_joint_mappings(dataset=dtype)
     keypoints3d = keypoints3d[:, mapping_target, :]
@@ -224,7 +166,12 @@ def main(_):
         aist_dataset.keypoint3d_dir, seq_name, use_optim=True)
 
     # SMPL fitting
-    smpl, loss = smpl_regressor.fit(keypoints3d, dtype='coco', verbose=True)
+    if FLAGS.data_type == "internal":
+      smpl, loss = smpl_regressor.fit(keypoints3d, dtype='coco', verbose=True)
+    elif FLAGS.data_type == "openpose":
+      smpl, loss = smpl_regressor.fit(keypoints3d, dtype='openpose25', verbose=True)
+    else:
+      raise ValueError(FLAGS.data_type)
 
     # One last time forward
     with torch.no_grad():
@@ -245,12 +192,6 @@ def main(_):
           'smpl_loss': loss,
       }, f, protocol=pickle.HIGHEST_PROTOCOL)
 
-  # upload results to GCS
-  if FLAGS.save_dir_gcs:
-    import gcs_utils
-    gcs_utils.upload_files_to_gcs(
-        local_folder=FLAGS.save_dir,
-        gcs_path=FLAGS.save_dir_gcs)
 
 if __name__ == '__main__':
   app.run(main)

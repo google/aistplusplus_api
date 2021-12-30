@@ -25,7 +25,7 @@ import torch
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'anno_dir',
-    '/home/ruilongli/data/AIST++_openpose/',
+    '/home/ruilongli/data/AIST++/',
     'input local dictionary for AIST++ annotations.')
 flags.DEFINE_string(
     'video_dir',
@@ -37,7 +37,7 @@ flags.DEFINE_string(
     'input local dictionary that stores SMPL data.')
 flags.DEFINE_string(
     'video_name',
-    'gKR_sFM_c01_d29_mKR5_ch14',
+    'gBR_sBM_c01_d04_mBR0_ch01',
     'input video name to be visualized.')
 flags.DEFINE_string(
     'save_dir',

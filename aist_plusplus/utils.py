@@ -97,3 +97,63 @@ def ffmpeg_video_to_images(video_path, image_dir, fps=None) -> None:
     stream, os.path.join(image_dir, '%08d.jpg'), start_number=0)
   stream = ffmpeg.overwrite_output(stream)
   ffmpeg.run(stream, quiet=True)
+
+
+def unify_joint_mappings(dataset='openpose25'):
+  """Unify different joint definations.
+
+  Output unified defination:
+      ['Nose',
+      'RShoulder', 'RElbow', 'RWrist',
+      'LShoulder', 'LElbow', 'LWrist',
+      'RHip', 'RKnee', 'RAnkle',
+      'LHip', 'LKnee', 'LAnkle',
+      'REye', 'LEye',
+      'REar', 'LEar',
+      'LBigToe', 'LHeel',
+      'RBigToe', 'RHeel',]
+
+  Args:
+    dataset: `openpose25`, `coco`(17) and `smpl`.
+  Returns:
+    a list of indexs that maps the joints to a unified defination.
+  """
+  if dataset == 'openpose25':
+    return np.array([
+        0,
+        2, 3, 4,
+        5, 6, 7,
+        9, 10, 11,
+        12, 13, 14,
+        15, 16,
+        17, 18,
+        19, 21,
+        22, 24,
+    ], dtype=np.int32)
+  elif dataset == 'smpl':
+    # note SMPL needs to be "left-right flipped" to be consistent
+    # with others
+    return np.array([
+        24,
+        16, 18, 20,
+        17, 19, 21,
+        1, 4, 7,
+        2, 5, 8,
+        26, 25,
+        28, 27,
+        32, 34,
+        29, 31,
+    ], dtype=np.int32)
+  elif dataset == 'coco':
+    return np.array([
+        0,
+        5, 7, 9,
+        6, 8, 10,
+        11, 13, 15,
+        12, 14, 16,
+        1, 2,
+        3, 4,
+    ], dtype=np.int32)
+  else:
+    raise ValueError(f'{dataset} is not supported')
+

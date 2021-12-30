@@ -26,9 +26,13 @@ import imageio
 import tqdm
 
 FLAGS = flags.FLAGS
+flags.DEFINE_list(
+    'sequence_names',
+    None,
+    'list of sequence names to be processed. None means to process all.')
 flags.DEFINE_string(
     'anno_dir',
-    '/home/ruilongli/data/AIST++/',
+    '/home/ruilongli/data/AIST++_openpose/',
     'input local dictionary for AIST++ annotations.')
 flags.DEFINE_string(
     'video_dir',
@@ -36,7 +40,7 @@ flags.DEFINE_string(
     'input local dictionary for AIST Dance Videos.')
 flags.DEFINE_string(
     'save_dir',
-    '/home/ruilongli/data/AIST++/segmentation/',
+    '/home/ruilongli/data/AIST++_openpose/segmentation/',
     'output local dictionary that stores AIST++ segmentation masks.')
 np.random.seed(0)
 
@@ -66,9 +70,14 @@ def main(_):
     if not os.path.exists("/tmp/BackgroundMattingV2"):
         os.system("cd /tmp/; git clone -q https://github.com/PeterL1n/BackgroundMattingV2")
 
-    aist_dataset = AISTDataset(anno_dir=FLAGS.anno_dir)
+    if FLAGS.sequence_names:
+        seq_names = FLAGS.sequence_names
+    else:
+        aist_dataset = AISTDataset(FLAGS.anno_dir)
+        seq_names = aist_dataset.mapping_seq2env.keys()
+
     os.makedirs(FLAGS.save_dir, exist_ok=True)
-    for seq_name in sorted(aist_dataset.mapping_seq2env.keys()):    
+    for seq_name in seq_names:    
         for view in AISTDataset.VIEWS:
             video_name = AISTDataset.get_video_name(seq_name, view)
             video_file = os.path.join(FLAGS.video_dir, video_name + ".mp4")
