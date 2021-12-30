@@ -98,7 +98,7 @@ def main(_):
           (0, 17), (17, 18), (18, 19), (19, 20)
       ])
       bones = np.concatenate([
-          body_bones, hand_bones + 25, body_bones + 25 + 21]).tolist()
+          body_bones, hand_bones + 25, hand_bones + 25 + 21]).tolist()
     else:
       raise ValueError(FLAGS.data_type)
     keypoints3d = cgroup.triangulate(

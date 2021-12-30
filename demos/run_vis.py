@@ -25,23 +25,23 @@ import torch
 FLAGS = flags.FLAGS
 flags.DEFINE_string(
     'anno_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/',
+    '/home/ruilongli/data/AIST++_openpose/',
     'input local dictionary for AIST++ annotations.')
 flags.DEFINE_string(
     'video_dir',
-    '/usr/local/google/home/ruilongli/data/AIST_plusplus/refined_10M_all_video/',
+    '/home/ruilongli/data/AIST/videos/10M/',
     'input local dictionary for AIST Dance Videos.')
 flags.DEFINE_string(
     'smpl_dir',
-    '/usr/local/google/home/ruilongli/data/SMPL/',
+    '/home/ruilongli/data/smpl_model/smpl',
     'input local dictionary that stores SMPL data.')
 flags.DEFINE_string(
     'video_name',
-    'gWA_sFM_c01_d27_mWA2_ch21',
+    'gKR_sFM_c01_d29_mKR5_ch14',
     'input video name to be visualized.')
 flags.DEFINE_string(
     'save_dir',
-    '/usr/local/google/home/ruilongli/data/public/aist_plusplus_final/tmp/',
+    './',
     'output local dictionary that stores AIST++ visualization.')
 flags.DEFINE_enum(
     'mode', '2D', ['2D', '3D', 'SMPL', 'SMPLMesh'],

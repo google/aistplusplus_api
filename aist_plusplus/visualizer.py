@@ -27,7 +27,7 @@ _COLORS = [[255, 0, 0], [255, 85, 0], [255, 170, 0], [255, 255, 0],
 
 def plot_kpt(keypoint, canvas, color=None):
   for i, (x, y) in enumerate(keypoint[:, 0:2]):
-    if np.isnan(x) or np.isnan(y):
+    if np.isnan(x) or np.isnan(y) or x < 0 or y < 0:
       continue
     cv2.circle(canvas, (int(x), int(y)),
                7,
