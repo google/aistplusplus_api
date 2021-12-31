@@ -83,19 +83,21 @@ def main(_):
         smpl_trans = torch.from_numpy(smpl_trans).float()
 
         smpl = SMPL(model_path=FLAGS.smpl_dir, gender='MALE', batch_size=1)
-        rest_output, rest_transforms = smpl.forward(
-            scaling=smpl_scaling.reshape(1, 1),
-        )
+        with torch.no_grad():
+            rest_output, rest_transforms = smpl.forward(
+                scaling=smpl_scaling.reshape(1, 1),
+            )
         pose_data["rest_joints"] = rest_output.joints.squeeze(0)[:24]
         pose_data["rest_verts"] = rest_output.vertices.squeeze(0)
         pose_data["rest_tfs"] = rest_transforms.squeeze(0)
 
-        pose_output, pose_transforms = smpl.forward(
-            global_orient=smpl_poses[:, 0:1],
-            body_pose=smpl_poses[:, 1:],
-            transl=smpl_trans,
-            scaling=smpl_scaling.reshape(1, 1),
-        )
+        with torch.no_grad():
+            pose_output, pose_transforms = smpl.forward(
+                global_orient=smpl_poses[:, 0:1],
+                body_pose=smpl_poses[:, 1:],
+                transl=smpl_trans,
+                scaling=smpl_scaling.reshape(1, 1),
+            )
         pose_data["joints"] = pose_output.joints[:, :24]
         pose_data["verts"] = pose_output.vertices
         pose_data["tfs"] = pose_transforms
@@ -118,8 +120,8 @@ def main(_):
             alpha1_files = sorted(glob.glob(os.path.join(alpha1_dir, "*.png")))
             alpha2_dir = os.path.join(output_dir, "alpha2", view)
             alpha2_files = sorted(glob.glob(os.path.join(alpha2_dir, "*.png")))
-            masks_dir = os.path.join(output_dir, "mask", view)
-            os.makedirs(masks_dir, exist_ok=True)
+            mask_dir = os.path.join(output_dir, "mask", view)
+            os.makedirs(mask_dir, exist_ok=True)
 
             for image_file, alpha1_file, alpha2_file in zip(
                 image_files, alpha1_files, alpha2_files
@@ -134,8 +136,7 @@ def main(_):
                 mask[bg_mask] = 0
                 mask[~ (fg_mask | bg_mask)] = 128
                 imageio.imwrite(
-                    os.path.join(masks_dir, os.path.basename(alpha1_file)), mask)
-            
+                    os.path.join(mask_dir, os.path.basename(alpha1_file)), mask)
 
 if __name__ == '__main__':
     app.run(main)
