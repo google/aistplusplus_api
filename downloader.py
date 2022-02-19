@@ -31,7 +31,9 @@ LIST_URL = 'https://storage.googleapis.com/aist_plusplus_public/20121228/video_l
 
 def _download(video_url, download_folder):
   save_path = os.path.join(download_folder, os.path.basename(video_url))
-  urllib.request.urlretrieve(video_url, save_path)
+  # Skip already downloaded files (helpful to resume interrupted downloads)
+  if not os.path.exists(save_path):
+    urllib.request.urlretrieve(video_url, save_path)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
