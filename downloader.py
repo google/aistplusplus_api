@@ -23,6 +23,7 @@ import argparse
 import multiprocessing
 import os
 import sys
+import time
 import urllib.request
 from functools import partial
 
@@ -31,7 +32,21 @@ LIST_URL = 'https://storage.googleapis.com/aist_plusplus_public/20121228/video_l
 
 def _download(video_url, download_folder):
   save_path = os.path.join(download_folder, os.path.basename(video_url))
-  urllib.request.urlretrieve(video_url, save_path)
+  if not os.path.exists(save_path):
+    try_times = 11
+    while try_times > 0:
+      try:
+        try_times = try_times - 1
+        urllib.request.urlretrieve(video_url, save_path)
+      except:
+        if os.path.exists(save_path):
+          os.remove(save_path)
+        time.sleep(0.1)
+        if try_times == 0:
+          sys.stderr.write(f'\ndownload url: {video_url} failed after retry 10 times.\n')
+        continue
+      else:
+        break
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
